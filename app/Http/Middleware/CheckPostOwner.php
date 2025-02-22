@@ -13,7 +13,7 @@ class CheckPostOwner
     
     public function handle(Request $request, Closure $next)
     {
-        $postId = $request->route('id'); // URL dan post ID olish
+        $postId = $request->route('id'); 
         $post = Post::find($postId);
 
         if (!$post || $post->user_id !== Auth::id()) {
