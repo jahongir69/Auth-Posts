@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\PostUpdateRequest;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Post;
+
 class PostController extends Controller
 {
     public function index()
@@ -12,15 +15,9 @@ class PostController extends Controller
         return response()->json(Post::with('user')->get());
     }
 
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required'
-        ]);
-
-        $post = Auth::user()->posts()->create($request->only('title', 'description'));
-
+        $post = Auth::user()->posts()->create($request->validated());
         return response()->json(['message' => 'Post created', 'post' => $post]);
     }
 
@@ -29,34 +26,23 @@ class PostController extends Controller
         return response()->json(Post::with('user')->findOrFail($id));
     }
 
-    public function update(Request $request, $id)
+    public function update(PostUpdateRequest $request, $id)
     {
         $post = Post::findOrFail($id);
-
         if ($post->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required'
-        ]);
-
-        $post->update($request->only('title', 'description'));
-
+        $post->update($request->validated());
         return response()->json(['message' => 'Post updated', 'post' => $post]);
     }
 
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-
         if ($post->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
         $post->delete();
-
         return response()->json(['message' => 'Post deleted']);
     }
 }
