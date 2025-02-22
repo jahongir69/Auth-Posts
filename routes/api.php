@@ -23,4 +23,7 @@ Route::put('/posts/{id}', [PostController::class, 'update']);
 Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 Route::post('/posts/{id}/comments', [CommentController::class, 'store']);
 Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+Route::put('/posts/{id}', [PostController::class, 'update'])->middleware('checkPostOwner');
+Route::delete('/posts/{id}', [PostController::class, 'destroy'])->middleware('checkPostOwner');
+
 });
